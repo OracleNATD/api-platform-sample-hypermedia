@@ -1,0 +1,216 @@
+swagger: "2.0"
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: 1.0.0
+  title: Level 3 RESTful API
+  description: A sample RESTful API which returns platform, domain and account information based on a client request Id.
+  termsOfService: http://oracle.com/terms/
+  contact:
+    name: W. Brian Leonard
+    email: william.leonard@oracle.com
+    url: http://oracle.com  
+  license:
+    name: MIT
+    url: http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT
+    
+################################################################################
+#                  Host, Base Path, Schemes and Content Types                  #
+################################################################################    
+host: nodeapicontainer-gse00001975.apaas.em2.oraclecloud.com
+basePath: /api/v1/
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+  
+################################################################################
+#                                   Parameters                                 #
+################################################################################
+parameters:
+  platformId:
+    name: platformId
+    in: path
+    description: ID of platform to fetch
+    type: integer
+    required: true
+  domainId:  
+    name: domainId
+    in: path
+    description: ID of domain to fetch
+    type: integer
+    required: true
+  accountId:
+    name: accountId
+    in: path
+    description: ID of domain to fetch
+    type: integer
+    required: true
+  clientRequestId:
+    name: clientRequestId
+    in: query
+    description: ID of client request
+    type: integer
+    required: true
+
+################################################################################
+#                                           Paths                              #
+################################################################################  
+paths:
+  /platforms:
+    get:
+      description: |
+        Returns all platforms from the system that the user has access to. The response includes the display name and other details about each plastform, and lists the platforms in the proper display order.
+      operationId: findPlatforms
+      responses:
+        200:
+          description: platform response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Platform'
+  /platforms/{platformId}:
+    get:
+      description: Returns a platform based on a single ID
+      operationId: find platform by id
+      parameters:
+        - $ref: '#/parameters/platformId'
+      responses:
+        200:
+          description: platform response
+          schema:
+            type: object
+            $ref: '#/definitions/Platform'
+  /platforms/{platformId}/domains:
+    get:
+      description: Returns all domains beloning to the platform
+      operationId: find domains
+      parameters:
+        - $ref: '#/parameters/platformId'
+      responses:
+        200:
+          description: Domain response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Domain'
+  /platforms/{platformId}/domains/{domainId}:
+    get:
+      description: Returns a domain based on a single ID
+      operationId: find domain by id
+      parameters:
+        - $ref: '#/parameters/platformId'
+        - $ref: '#/parameters/domainId'        
+      responses:
+        200:
+          description: Domain response
+          schema:
+            type: object
+            $ref: '#/definitions/Domain'    
+  /platforms/{platformId}/domains/{domainId}/accounts:
+    get:
+      description: Returns all accounts belonging to the domain
+      operationId: find accounts
+      parameters:
+        - $ref: '#/parameters/platformId'
+        - $ref: '#/parameters/domainId'   
+      responses:
+        200:
+          description: Account response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Account'    
+  /platforms/{platformId}/domains/{domainId}/accounts/{accountId}:
+    get:
+      description: Returns an account based on a single ID
+      operationId: find accounts
+      parameters:
+        - $ref: '#/parameters/platformId'
+        - $ref: '#/parameters/domainId'     
+        - $ref: '#/parameters/accountId'
+        - $ref: '#/parameters/clientRequestId'             
+      responses:
+        200:
+          description: Account response
+          schema:
+            type: object
+            $ref: '#/definitions/Account'      
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+  Platform:
+    required:
+      - platformId
+      - description
+      - display_name
+      - capacity
+    properties:
+      plastformId:
+        type: integer
+        description: Unique identifier representing a specific platform. 
+      description:
+        type: string
+        description: Description of platform.
+      display_name:
+        type: string
+        description: Display name of platform.
+      capacity:
+        type: string
+        description: Capacity of platform. For example, 4 domains.  
+#      domains:
+#        type: array
+#        items: 
+#          $ref: '#/definitions/Domain'
+  Domain:
+    type: object
+    required:
+      - platformId
+      - domainId
+    properties:
+      domainId:
+        type: integer
+        description: Unique identifier for the domain
+      platformId:
+        type: integer
+        description: Platform to which domain belongs
+      description:
+        type: string
+        description: Description of platform.
+#      accounts:
+#        type: array
+#        items: 
+#          $ref: '#/definitions/Account'
+  Account:
+    type: object
+    required:
+      - platformId
+      - domainId    
+      - owner
+      - status
+      - activationDate
+    properties:
+      accountId:
+        type: integer
+        description: Unique identifier for the account
+      domainId:
+        type: integer
+        description: Domain to which the account belongs
+      platformId:
+        type: integer
+        description: Platform to which account belongs        
+      owner: 
+        type: string
+        description: Account owner
+      status:
+        type: string
+        description: Status of account
+      activationDate:
+        type: string
+        description: Date account was activated
